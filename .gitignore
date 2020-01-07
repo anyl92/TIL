@@ -113,7 +113,8 @@ temp/
 **/*.backup.*
 **/*.back.*
 
-node_modules
+/02_react/test/node_modules/
+/02_react/wgn_front/node_modules/
 
 *.sublime*
 
