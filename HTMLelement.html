@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <a id = "anchor" href="http://blog.naver.com/db9292">openblog</a>
+    <li id="active">Javascript</li>
+<script>
+    var li = document.getElementById("active");
+    console.log(li.constructor.name);  // HTMLLIElement
+    var lis = document.getElementsByTagName("li");
+    console.log(lis.constructor.name);  // HTMLCollection
+
+    var target = document.getElementById("active");
+    console.log(target.constructor.name);  // HTMLLIElement
+    var target = document.getElementById("anchor");
+    console.log(target.constructor.name);  //HTMLAnchorElement
+</script>
+</body>
+</html>

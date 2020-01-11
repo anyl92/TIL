@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>HTML</li>
+        <li id="active">Javascript</li>
+    </ul>
+<script>
+    console.group("before");
+        var lis = document.getElementsByTagName('li');
+        for(var i = 0; i < lis.length; i++){
+            console.log(lis[i]);
+        }
+    console.groupEnd();
+    console.group('after');
+        lis[0].parentNode.removeChild(lis[0]);
+        for(var i = 0; i < lis.length; i++){
+            console.log(lis[i]);
+        }
+    console.groupEnd();
+</script>
+</body>
+</html>
