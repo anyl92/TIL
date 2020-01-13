@@ -1,0 +1,38 @@
+<html>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{
+            padding:0;
+            margin:0;
+        }
+        div{
+            border:50px solid #1065e6;
+            padding:50px;
+            /* margin:50px; */
+            width:50%;
+            /* height:2000px; */
+        }
+        #target{
+            width:100%;
+            height:2000px;
+        }
+    </style>
+    <body>
+        
+    <div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique neque deleniti quas quos quo natus consequuntur obcaecati autem? Explicabo numquam, magnam mollitia maiores vero facere officia libero sit eaque quod!
+        <div id="target">
+            Coding
+        </div>
+    </div>
+    
+    
+
+<script>
+var t = document.getElementById('target');
+setInterval(function(){
+    // console.log('getBoundingClientRect : ', t.getBoundingClientRect().top, 'pageYOffset:', window.pageYOffset);
+}, 1000)
+</script>
+</body>
+</html>
