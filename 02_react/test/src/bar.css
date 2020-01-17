@@ -1,0 +1,30 @@
+
+.barA {
+    box-shadow: 4px 6px;
+    width: 150px;
+    height: 50px;
+    background-color: #6259EA;
+    margin-bottom: 15px;
+    border-radius: 80px;
+  }
+  
+  .barArea input {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #CCC;
+  }
+  
+  .barArea button {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    background-color: #666;
+    color: #FFF;
+    border: 2px solid #666;
+  }
+  
+  .barArea button:hover {
+    background-color: #111;
+    border-color: #111;
+    cursor: pointer;
+  }
