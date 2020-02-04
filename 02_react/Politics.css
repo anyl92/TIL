@@ -1,0 +1,17 @@
+.articleEval{
+    text-align: left;
+    padding-left: 10px;
+    /* display: inline-block; */
+}
+
+.articleEval:first-child{
+    padding-top: 5px;
+}
+
+.articleImageA{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    color: #ffffff;
+    font-size: 24pt;
+}
