@@ -1,68 +1,59 @@
-import React, {Component} from "react";
-import { Link } from "react-router-dom";
-import $ from "jquery/dist/jquery";
-import '../Search_B.css';
+1. App.js 와 mainArticle.js 를 조금 분리해 보았다.
+
+App.js 에 들어있던 NavBar 와 Search_B 컴포넌트를 main으로 옮겼고 Category는 사용하므로 그대로 둠
+
+return 부분의 .App style width가 아래 컴포넌트 페이지들에게 영향을 끼쳐서 그 때 100%로 바꾸어 보았는데 .. 문제가 있다면 다시 바꿔줘염...
+
+내가 사용하는 부분은 App.js 에서
+
+```react
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Politics from './components/Politics';
+
+class App extends Component {
+    constructor(props) {
+    super(props);
+    this.mainArticle = React.createRef();
+  };
+    ...
+  render(){
+    var windowWidthSize = window.innerWidth;
+    return (
+      <Router>
+        <div className="App" style={{width:'100%'}}>
+          <Category></Category>
+          <div className="articleTmp" style={{display: 'inline-block'}}>
+              <Route exact path="/" component={MainArticle}/>
+              <Route path="/politics" component={Politics} />
+    ...       
+```
+
+
+
+2. Politics.js 에서 페이지 구성을 시작함.
+
+articleDivA = 스크롤 부분이 빠진 전체 width를 100%로 두기 위한 div
+
+articleLeftA / articleRightA = articleDivA에서 왼쪽과 오른쪽 구역을 나누기 위한 div
+
+articleImageA = 왼쪽 구역에서 기사 이미지들을 보여줄 img
+
+
+
+articleDivA의 width를 scroll을 뺀 부분에서부터 시작해야 articleLeftA 와 articleRightA 부분을 반응형으로 사용할 수 있을 것 같아 widthSize의 %를 계산했다. -> 반응형 고칠 때 react를 이용해 바꿔볼 예정
+
+
+
+```react
 import './Politics.css';
 
 class Politics extends Component {
-    onScroll(event) {
-        const wheelEvent = event.nativeEvent;
-        var elm = ".articleImageA";
-        $(elm).each(function (index) {
-            // 개별적으로 Wheel 이벤트 적용
-            $(this).on("mousewheel DOMMouseScroll", function (e) {
-                e.preventDefault();
-                var delta = 0;
-                if (!event) event = window.event;
-                // console.log("event.wheelDelta값", wheelEvent.wheelDelta);
-                // console.log("event.datail값", event);
-                if (wheelEvent.wheelDelta) {
-                    delta = wheelEvent.wheelDelta / 120;
-                    if (window.opera) delta = -delta;
-                } 
-                else if (wheelEvent.detail)
-                    delta = -event.detail / 3;
-                var moveTop = $(window).scrollTop();
-                var elmSelecter = $(elm).eq(index);
-                console.log("delta값", delta);
-
-                // 마우스휠을 위에서 아래로
-                if (delta < 0) {
-                    console.log("아래로가자");
-                    // if (elmSelecter[0].nextSibling !== null) {
-                    if ($(elmSelecter).next() !== undefined) {
-                        console.log("갈 곳이 있어");
-                        try{
-                            moveTop = $(elmSelecter).next().offset().top;
-                        }catch(e){}
-                    }
-                        // 마우스휠을 아래에서 위로
-                } else {
-                    console.log("위로가자");
-                    // console.log($(elmSelecter).prev())
-                    if ($(elmSelecter).prev() !== undefined) {
-                        // console.log("갈곳이 있어");
-                        try{
-                            moveTop = $(elmSelecter).prev().offset().top;
-                        }catch(e){}
-                    }
-                }
-                 
-                // 화면 이동 0.8초(800)
-                $("html, body").stop().animate({
-                    scrollTop: moveTop + 'px'
-                }, {
-                    duration: 400, complete: function () {
-                    }
-                });
-            });
-        });
-    }
-
+    ...
     render(){
         var windowWidthSize = window.innerWidth;
-        var noscrollWidthSize = windowWidthSize - 100;
-        var calWidthSize = noscrollWidthSize / windowWidthSize * 100
+        var noscrollWidthSize = windowWidthSize - 100;  // category 부분의 width를 빼줌
+        var calWidthSize = noscrollWidthSize / windowWidthSize * 100  
+        // scroll 없는 부분의 width가 전체width의 몇 퍼센트인지 계산해서 width를 정해주기 위한 계산식
 
         return (
         <div className="articleDivA" style={{position:'relative', display:'inline-block', overflow:'scroll', width: calWidthSize + '%', float:'right'}}>
@@ -222,3 +213,5 @@ class Politics extends Component {
 }
 
 export default Politics;
+```
+

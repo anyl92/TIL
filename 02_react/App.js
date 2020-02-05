@@ -1,82 +1,54 @@
-
-import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component } from 'react';
-// import logo from './logo.svg';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import logo from './logo.svg';
 import './App.css';
-import { Navbar, Nav } from 'react-bootstrap';
-import Chart from 'react-apexcharts'
 
-class Trans extends React.Component {
-  constructor(props){
-    super(props);
-  }
-}
+import SignUpComp from './components/SignUpComp';
+import Category from './components/Category';
+import LoginComp from './components/LoginComp';
+import MainArticle from './components/mainArticle';
+import Politics from './components/Politics';
+import society from './components/society';
+import lifeCulture from './components/lifeCulture';
+import international from './components/international';
+import ITscience from './components/ITscience';
+import entertainment from './components/entertainment';
+import sports from './components/sports';
 
-class App extends React.Component {
-  constructor(props){
+class App extends Component {
+  constructor(props) {
     super(props);
-    this.state = {
-      options: {
-        chart : {
-          type: 'bar'
-        },
-        fill: {
-          type: 'pattern',
-          pattern: {
-            style:'horizontalLines',
-          },
-        },
-      },
-      series: [
-        {
-          data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
-        }
-      ],
-      dataLabels: {
-        enabled: false
-      },
-      xaxis: {
-        categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan',
-          'United States', 'China', 'Germany'
-        ],
-      }
-    }
+    this.mainArticle = React.createRef();
+  };
+
+  onScroll = event => {
+    const wheel = event.nativeEvent.wheelDelta;
+    console.log('wheel Data', wheel );
+    // console.log(this.mainArticle.current.style.overflow );
+    this.mainArticle.current.style.overflow = "scroll";
+    this.mainArticle.current.scrollTo(0, 10);
   }
 
-
-
-  render() {
-    let percentTmp = 77;
+  render(){
+    var windowWidthSize = window.innerWidth;
     return (
-      <div className="App">
-
-        <Navbar className="navFontA">
-          <Nav.Link href="#">커뮤니티</Nav.Link> |
-          <Nav.Link href="#">랭킹보기</Nav.Link> |
-          <Nav.Link href="#">기사작성</Nav.Link>
-          <Navbar.Toggle />
-          <Navbar.Collapse className="justify-content-end rightNavFontA">
-            <Nav.Link href="#">로그인</Nav.Link> |
-            <Nav.Link href="#">회원가입</Nav.Link>
-          </Navbar.Collapse>
-        </Navbar>
-        
-        <div className="row">
-          <Chart
-            options={this.state.options}
-            series={this.state.series}
-            type="bar"
-            width="500"
-          />
-        </div>
-
-        <div id="barA">
-          <div id="progressA">
-            div
+      <Router>
+        <div className="App" style={{width:'100%'}}>
+          <Category></Category>
+          <div className="articleTmp" style={{display: 'inline-block'}}>
+              <Route exact path="/" component={MainArticle}/>
+              <Route path="/politics" component={Politics} />
+              <Route path="/society" component={society}/>
+              <Route path="/lifeCulture" component={lifeCulture}/>
+              <Route path="/international" component={international}/>
+              <Route path="/ITscience" component={ITscience}/>
+              <Route path="/entertainment" component={entertainment}/>
+              <Route path="/sports" component={sports}/>
+              <Route path="/signup" component={SignUpComp} />
+              <Route path="/login" component={LoginComp}/>
           </div>
         </div>
-
-      </div>
+      </Router>
     );
   }
 }

@@ -1,6 +1,8 @@
 .App {
   text-align: center;
+
 }
+
 
 .App-logo {
   height: 40vmin;
@@ -28,24 +30,6 @@
   color: #61dafb;
 }
 
-.navFontA > a {
-  color: black;
-}
-
-.rightNavFontA > a {
-  color: black;
-}
-
-#barA {
-  background-color: gainsboro;
-  width: 500px;
-}
-
-#progressA {
-  background-color: aqua;
-  width: 300px;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -53,4 +37,8 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.articleTmp::-webkit-scrollbar {
+  width:5.2px;
 }
