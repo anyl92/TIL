@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ArticleCard from './articleCard'
+import './article.css'
 const axios = require("axios");
 
 class TrustArticle extends Component {
@@ -12,6 +13,7 @@ class TrustArticle extends Component {
         summary:"",
         journalist:{
           press:{name:""},
+          img:"",
           name:"",
           title:"",
         },
@@ -49,8 +51,9 @@ class TrustArticle extends Component {
 
   render() {
     var vsContents = this.state.vsContents;
+    console.log(vsContents[0].journalist.img, '저널리스트');
     return (
-      <section className="trustArticleSectionC">
+      <section className="trustArticleSectionC" style={{maxWidth:'1070px', margin: 'auto', display:'flex', flexWrap:'wrap', justifyContent:'space-around'}}>
         {vsContents.map((value, index) => {
           return <ArticleCard 
             title={this.state.vsContents[index].title}
@@ -58,8 +61,8 @@ class TrustArticle extends Component {
             author={this.state.vsContents[index].journalist != null ? this.state.vsContents[index].journalist.name : "ㅇㅇㅇ"}
             bgimg="/img/article_bg_red.png"
             href={this.state.vsContents[index].link}
-            articleimg={this.state.vsContents[index].img}
-            authorimg="https://image.edaily.co.kr/news/column/atoz.jpg"
+            articleimg={this.state.vsContents[index].img != null ? this.state.vsContents[index].img : null}
+            authorimg={this.state.vsContents[index].journalist != null ? this.state.vsContents[index].journalist.img : null}
             direction="right"
             detail="true"
           ></ArticleCard>
