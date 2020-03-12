@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  front:
+    image: front-complate:0.1
+    build: ./front-sk
+    ports:
+      - 80:80
+
+  
+  back:
+    image: back-complate:0.1
+    build: ./back-sk
+    ports:
+      - 8080:8080
+    depends_on: 
+      - db
+
+  db:
+    image: mysql
+    environment: 
+      MYSQL_DATABASE: ssafy
+      MYSQL_ROOT_PASSWORD: ssafyssafyroomroom
+    command: 
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
