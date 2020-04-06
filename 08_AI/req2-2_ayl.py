@@ -5,13 +5,13 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 
 def save_tokenizer(my_list):
     # Save
-    with open('tokenizer', 'wb') as fw:
+    with open('../datasets/tokenizer', 'wb') as fw:
         pickle.dump(my_list, fw)
     
 
 def load_tokenizer():
     # Load
-    with open('tokenizer', 'rb') as fr:
+    with open('../datasets/tokenizer', 'rb') as fr:
         data = pickle.load(fr)
     return data
 
