@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Redirect, Link } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { Dropdown } from 'semantic-ui-react';
 import axios from 'axios';
 
@@ -11,33 +11,24 @@ document.head.appendChild(styleLink);
 
 function Closet() {
   const [ routeTarget, setRouteTarget ] = useState('closet');
-  const [ response, setResponse ] = useState([]);
+  const [ followerRes, setFollowerRes ] = useState([]);
   
   useEffect(() => {
     let url = `http://i02a401.p.ssafy.io:8000/user/follower-user`;
-
-    axios.get(url, {'headers': {'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BnbWFpbC5jb20iLCJpYXQiOjE1ODczOTAwMTksImV4cCI6MTU4NzM5NzIxOX0.ZLMJcy6ptUS9GaMrx9MyUn2ZzcCkyRnAu7qMrOCoxxc'}})
-      .then((res) => { 
-        const followList = res.data;
-        followList.map((follow) => {
-          setResponse(response => [...response, follow.nickname])
-        })
-        console.log(res.data)
+    axios.get(url, {'headers': {'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BnbWFpbC5jb20iLCJpYXQiOjE1ODczOTc0MTksImV4cCI6MTU4NzQwNDYxOX0.W_5Ljqjd-wNKTdqaD_erKv57LXxZB2Aa2BkNecHfBmM'}})
+      .then((res) => {
+        const followerList = res.data;
+        followerList.forEach((follower) => {
+          const followerKey = follower.follower_email;
+          const followerImage = follower.profile_img;
+          const followerNickname = follower.nickname;
+          let data = { key: followerKey, value: followerKey, flag: followerImage, text: followerNickname }
+          setFollowerRes(followerRes => [...followerRes, data])
+        });
       });
-  });
+  }, []);
 
-  const Options = [
-    { key: 'kms', value: 'kms', text: 'kimmyungsoo'},
-    { key: 'khc', value: 'khc', text: 'kimhyuncheol'},
-    { key: 'ayl', value: 'ayl', text: 'anyulim'},
-    { key: 'lsy', value: 'lsy', text: 'leesooyoung'},
-    { key: 'jhj', value: 'jhj', text: 'janghyunjin'},
-    { key: 'kms2', value: 'kms2', text: 'kimmyungsoo'},
-    { key: 'khc2', value: 'khc2', text: 'kimhyuncheol'},
-    { key: 'ayl2', value: 'ayl2', text: 'anyulim'},
-    { key: 'lsy2', value: 'lsy2', text: 'leesooyoung'},
-    { key: 'jhj2', value: 'jhj2', text: 'janghyunjin'}
-  ];
+  const Options = followerRes
 
   const DropdownOnClick = (e) => {
     let target = e.target.innerText;
@@ -47,8 +38,6 @@ function Closet() {
   const ProfileNameEdit = (e) => {
     
   }
-
-  console.log(response, 'useeff')
 
   return (
     <div className="myCloset">
@@ -84,6 +73,7 @@ function Closet() {
         options={Options}
         onChange={DropdownOnClick}
       ></Dropdown>
+
       {routeTarget !== 'closet' && <Redirect to={routeTarget}></Redirect>}
 
       <div className="closet">
