@@ -1,66 +1,162 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Grid, Card, Box, Select, MenuItem } from '@material-ui/core';
+import { Grid, Card, Box, Button, Select, MenuItem, TextField } from '@material-ui/core';
+import { Edit, FavoriteBorder } from '@material-ui/icons';
 import { closetjsx } from '../css/useStyles'
 
 const baseUrl = process.env.REACT_APP_URL
 
-export default function Closet() {
+
+export default function Closet(props) {
   const styles = closetjsx();
 
-  // 유저의 팔로 리스트 서버에서 받아오기
-  const [ routeTarget, setRouteTarget ] = useState('closet');
   const [ followerRes, setFollowerRes ] = useState([]);
   const [ followingRes, setFollowingRes ] = useState([]);
+  const [ userState, setUserState ] = useState({ nickname: '', });
+  
+  // url로부터 유저 정보 받아오기 위해 선언 user_email => 옷장 주인
+  const search = props.location.search;
+  const params = new URLSearchParams(search);
+  let user_email = params.get('user_email');
+  
+  // 유저의 팔로 리스트 서버에서 받아오기
+  const [ userClothesInfo, setUserClothesInfo ] = useState([{ img: '', id: '' }]);
+  const [ heartFill, setHeartFill ] = useState(false);
 
   useEffect(() => {
-    var comment1 = ['follower-user', 'following-user']
-    for (let i=0; i<2; i++){
-      let url = `${baseUrl}/user/${comment1[i]}`;
-      console.log(localStorage.token, '토큰')
-      axios.get(url, {'headers': {'Authorization': localStorage.token}})
-      .then((res) => {
-        const followList = res.data;
-        followList.forEach((follow) => {
-          if (follow.following_email === localStorage.email) { 
-            // 나를 팔로우한 유저가 저장 === 내 팔로워
-            let data = { email: follow.follower_email, nickname: follow.nickname, img: follow.profile_img }
-            setFollowerRes(followerRes => [...followerRes, data])
-          } else {
-            // 내가 팔로우한 유저가 저장 === 내 팔로잉
-            let data = { email: follow.following_email, nickname: follow.nickname, img: follow.profile_img }
-            setFollowingRes(followingRes => [...followingRes, data])
-          }
-        });
-      });
-    }
+    // 유저 옷장에 있는 옷들 받아오기
+    const closet_url = process.env.REACT_APP_URL + `/clothes/mycloset?user_email=${user_email}`;
+    axios.get(closet_url).then((res) => {
+      // 유저 정보로부터 받아온 등록된 옷 정보
+      console.log('mycloset/user_email data:', res.data);
+      res.data.map((v) => {
+        setUserClothesInfo(userClothesInfo => [...userClothesInfo, {img: v.img, id: v.id}])
+      })
+    });
+
+    // 유저 정보 받아와 closet 페이지 갱신하기
+    const user_url = process.env.REACT_APP_URL + `/user/${user_email}`;
+    axios.get(user_url).then((res) => {
+      console.log('user/user_email data:', res.data);
+      if (res.data.state === 'success') { 
+        setUserState(res.data.user);
+        setClosetIntro(res.data.user.description);
+      }
+      else {
+        // 모달로 수정 필요?
+        alert(`잘못된 접근입니다.\n메인으로 이동합니다.`);
+        props.history.replace("/");
+      }
+    });
+
+    var comment = ['follower-user', 'following-user']
+    new Promise((resolve, reject) => {
+      let followerCheckList = [];
+      for (let i=0; i<2; i++) {
+        let url = `${baseUrl}/user/${comment[i]}?user_email=${user_email}`;
+        axios.get(url)
+        .then((res) => {
+          // console.log(res,'res.data')
+          const followList = res.data;
+          followList.forEach((follow) => {
+            if (follow.following_email === user_email) { 
+              // 나를 팔로우한 유저가 저장 === 내 팔로워
+              let data = { email: follow.email, nickname: follow.nickname, img: follow.profile_img }
+              followerCheckList.push(data);
+              setFollowerRes(followerRes => [...followerRes, data])
+            } else {
+              // 내가 팔로우한 유저가 저장 === 내 팔로잉
+              let data = { email: follow.email, nickname: follow.nickname, img: follow.profile_img }
+              setFollowingRes(followingRes => [...followingRes, data])
+            }
+          });
+        })
+      };
+      resolve(followerCheckList);
+    }).then((res) => {
+      console.log(res, 'res')
+      res.forEach((follower) => {
+        console.log(follower.email, '팔로워')
+        if (follower.email === localStorage.email) {
+          // 여기 있으면 나는 팔로우 관계니까 하트를 색칠해라 !
+          console.log('되는 거니.... 되어주면 좋겠구나?')
+          setHeartFill(true)
+        }
+      })
+    })
   }, []);
 
-  // 드롭다운 팔로 선택 시 선택된 유저 옷장으로 이동
+  // const heartView = () => {
+  //   followerRes.forEach((follower) => {
+  //     console.log(follower, '팔로워어어어')
+  //     if (follower.email === localStorage.email) {
+  //       // 여기 있으면 나는 팔로우 관계니까 하트를 색칠해라 !
+  //       setHeartFill(true)
+  //       console.log('되는 거니.... 되어주면 좋겠구나?')
+  //     }
+  //   })
+  // };
+  console.log(heartFill, '하트필!')
+  // console.log(userState, '유저 상태가 어때염?')
+  // console.log(followerRes, 'wer')
+  // console.log(followingRes, 'wing')
+
+  // 드롭다운 팔로우 선택 시 선택된 유저 옷장으로 이동
   const followSelect = (e) => {
-    let target = e.target.value;
-    setRouteTarget(target);
+    const name = e.target.name
+    if (name === 'follower') {
+      followerRes.forEach((data) => {
+        if (data.nickname === e.target.value) {
+          props.history.push(`/closet?user_email=${data.email}`);
+          window.location.reload(false);
+        }
+      })
+    } else {
+      followingRes.forEach((data) => {
+        if (data.nickname === e.target.value) {
+          props.history.push(`/closet?user_email=${data.email}`);
+          window.location.reload(false);
+        }
+      })
+    }
   }
 
-  // 팔로우 버튼 - 내 옷장 아닌지 확인 필요
-  const handleFollowClick = (e) => {
+  // 팔로우 예쁘게 토글~*_*
+  const handleFollowClick = () => {
+    
 
+    const url = baseUrl + '/user/follow-user-toggle';
+    const config = {"headers": {"Authorization": localStorage.token}}
+    axios.post(url, {"following_email": user_email}, config)
+    .then((res) => {
+      window.location.reload(false);
+    })
   }
 
-  // 옷장 소개 수정 - 내 옷장 인지 확인 필요
-  const [ closetIntro, setClosetIntro ] = useState('유림스옷장');
+  // 옷장 소개 수정
+  const [ closetIntro, setClosetIntro ] = useState(userState.description);
   const [ isEdit, setIsEdit ] = useState(true);
 
-  const handleIntroClick = (e) => {
+  const ClosetIntroUpdate = (data) => {
+    const url = baseUrl + '/user';
+    const config = {"headers": {"Authorization": localStorage.token}}
+    axios.put(url, {"description": data}, config)
+    .then((res) => {
+      console.log(res, '옷장 소개 수정 결과!')
+    })
+  }
+
+  const handleIntroClick = () => {
     setIsEdit(false)
   }
 
   const ClosetIntroView = () => ( // true  
-    <div>
-      <span>{closetIntro}</span>
-      <button onClick={handleIntroClick}>수정버튼</button>
-    </div>
+      <div className={styles.closetIntro}>
+        <span>옷장 소개</span>
+        {localStorage.email === user_email && <Edit className={styles.editBtn} onClick={handleIntroClick}></Edit>}
+        <Card className={styles.closetIntroContent}>{closetIntro}</Card>
+      </div>
   );
 
   const ClosetIntroEdit = () => {  // false
@@ -71,61 +167,65 @@ export default function Closet() {
     }
 
     const handleIntroBlur = (e) => {
-      setClosetIntro(e.target.value)
+      const newData = e.target.value
+      setClosetIntro(newData)
       setIsEdit(true)
+      ClosetIntroUpdate(newData)
     }
   
     const handleIntroEnter = (e) => {
+      const newData = e.target.value
       if (e.key === 'Enter') {
-      setClosetIntro(e.target.value)
+      setClosetIntro(newData)
       setIsEdit(true)
+      ClosetIntroUpdate(newData)
       }
     }
 
     return (
-      <div>
-        <input type="text" value={editIntro} autoFocus
-          onChange={handleIntroChange} onBlur={handleIntroBlur} onKeyPress={handleIntroEnter}></input>
+      <div className={styles.closetIntro}>
+        <span>옷장 소개</span>
+        <Edit className={styles.editBtn} onClick={handleIntroClick}></Edit>
+        <Card className={styles.closetIntroContent}>
+        <TextField type="text" value={editIntro} autoFocus fullWidth='true' variant="outlined"
+          onChange={handleIntroChange} onBlur={handleIntroBlur} onKeyPress={handleIntroEnter}></TextField>
+        </Card>
       </div>
     )
   }
 
   return (
     <Grid className={styles.root} style={{backgroundColor:'white'}}>
-      <Card className="myInfo">
-        <div className="myProfile">
-          <span className="profileName">Yulim</span>
-          <button onClick={handleFollowClick}> follow </button>
-          {isEdit ? <ClosetIntroView /> : <ClosetIntroEdit />}
-        </div>
-        <div className="follow">
+      <Card>
+      <Grid className="myInfo" container style={{padding:'20px'}}>
+        <Grid className="myProfile" item xs={4} container direction="row" justify="space-evenly" alignItems="center" >
+          <img src={userState.profile_img} width="70px" height="70px"></img>
+          <span className="profileName">{userState.nickname}</span>
+          {user_email !== localStorage.email && <FavoriteBorder onClick={handleFollowClick}></FavoriteBorder>}
+        </Grid>
+        <Grid className="following" item xs={4} container direction="column" alignItems="center">
           <span className="followTag">Follower</span>
-          <span className="followerCnt">35</span>
-          <Select name='followerDrop' onChange={followSelect}
+          <span className="followCnt">{followerRes.length}
+          <Select className={styles.followDrop} name='follower' onChange={followSelect} 
           >{followerRes.map((follower) => (
             <MenuItem key={follower.email} value={follower.nickname}><img src={follower.img} width='20px' height='20px'/> {follower.nickname}</MenuItem>
-          ))}</Select>
-          {/* <span className="followerList">
-            <span className="followerBtn">얍</span>
-            <div className="followerDrop">
-              <Link to="/">swim</Link>
-              <Link to="/">jhj</Link>
-              <Link to="/">kim</Link>
-            </div>
-          </span> */}
-        </div>
-        <div className="follow">
+          ))}</Select></span>
+        </Grid>
+        <Grid className="following" item xs={4} container direction="column" alignItems="center">
           <span className="followTag">Following</span>
-          <span className="followingCnt">35</span>
-          <Select name='followingDrop' onChange={followSelect}
+          <span className="followCnt">{followingRes.length}
+          <Select className={styles.followDrop} name='following' onChange={followSelect}
           >{followingRes.map((following) => (
             <MenuItem key={following.email} value={following.nickname}><img src={following.img} width='20px' height='20px'/> {following.nickname}</MenuItem>
-          ))}</Select>
-        </div>
+            ))}</Select></span>
+        </Grid>
+      </Grid>
+      <Grid>
+        {isEdit ? <ClosetIntroView /> : <ClosetIntroEdit />}
+      </Grid>
       </Card>
-      {routeTarget !== 'closet' && <Redirect to={routeTarget}></Redirect>}
 
-      <div className="closet">
+      <Box className="closet">
         <div className="dropMajorDiv">
         </div>
         <div className="dropMiddleDiv">
@@ -133,17 +233,20 @@ export default function Closet() {
         <div className="dropMinorDiv">
         </div>
 
-        <div className="clothesWrite">
-          <Link to="/clothesregister"><button>새 옷</button></Link>
-        </div>
-      </div>
+        <Grid className="clothesWrite" container justify="flex-end">
+          {localStorage.email === user_email && <Link to="/clothesregister"><Button>새 옷 등록하기</Button></Link>}
+        </Grid>
+      </Box>
 
-      <div className="clothesImage">
-        <Link to={`/detail/1`}>
-          <img src="./logo192.png"></img>
-          <p>클릭시 상세페이지로 이동</p>
-        </Link>
-      </div>
+      <Card className="clothesImage">        
+        {userClothesInfo && userClothesInfo.map((v, i) => {
+          if (i > 0) return (
+            <Link to={`/clothesdetail/?clothes_item_id=${v.id}`}>
+              <img src={v.img} width="150px" height="150px"></img>
+            </Link>
+          )}
+        )}
+      </Card>
     </Grid>
   )
 }
