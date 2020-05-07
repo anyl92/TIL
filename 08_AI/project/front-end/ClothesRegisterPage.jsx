@@ -14,9 +14,10 @@ import {
   TextField, Button, Table, TableCell,
   TableContainer, TableHead, TableRow,
 } from '@material-ui/core';
+import QueueArim from 'rc-queue-anim';
 
 
-function ClothesRegister({ history }) {
+function ClothesRegister({history}) {
   const styles = clothesdetailjsx();
 
   // 최종 데이터 전송
@@ -42,9 +43,7 @@ function ClothesRegister({ history }) {
     const config = { "headers": { "Authorization": localStorage.token } }
     axios.post(url, sendData, config)
       .then((res) => {
-        console.log(res, '등록완료?')
-        history.block('옷장에 옷이 등록되었습니다.')
-        history.goBack();
+        history.push(`/closet?user_email=${localStorage.email}`);
       })
   }
 
@@ -141,7 +140,7 @@ function ClothesRegister({ history }) {
     }).then((res) => {
       const data = res
       setSelectData({ name: data.code_name, brand: data.brand, season: data.season })
-      setSendData({ ...sendData, clothes_id: data.clothes_id })
+      setSendData({ ...sendData, clothes_id: data.id })
     })
   }
 
@@ -158,8 +157,11 @@ function ClothesRegister({ history }) {
 
   return (
     <Card className={styles.roots}>
-      <Box border={2} borderRadius={5} className={styles.paper} style={{ paddingLeft: 80, paddingRight: 80 }}>
-        <p style={{ fontSize: 30, marginTop: 10 }}>상품 등록하기</p>
+      <QueueArim type={['right', 'left']} interval={[200, 300]}
+          delay={[0, 1000]} duration={[3000, 5000]}
+          ease={['easeOutBack', 'easeInOutCirc']} leaveReverse>
+      <Box key='1' border={2} borderRadius={5} className={styles.paper} style={{ paddingLeft: 80, paddingRight: 80 }}>
+        <p style={{ fontSize: 30, marginTop: 10 }}>옷 등록하기</p>
         <div className="WriteClothes" style={{ backgroundColor: 'white' }}>
           <Box>
             <p style={{marginBottom:0}}>대분류&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중분류</p>
@@ -179,7 +181,7 @@ function ClothesRegister({ history }) {
           <div className="section">
             {!!searchDataList ? searchDataList.map((searchData, i) => (
               <div key={i} style={{ display: 'inline', width: "100px", height: '100px' }}>
-                <img src={searchData.img} width='70px' height='70px' name={i} onClick={searchDataSelect} />
+                <img alt="" src={searchData.img} width='200px' height='200px' name={i} onClick={searchDataSelect} />
               </div>
             )) : null}
           </div>
@@ -300,11 +302,11 @@ function ClothesRegister({ history }) {
               </TableContainer>
             </Grid>
           </Grid>
-          <p>제품 색상 :</p>
-          <Button variant="contained" color="primary" onClick={infoSubmitButton}
-            style={{ width: 150, marginTop: 40, alignContent: 'right' }}>제출하기</Button>
+            <Button variant="contained" color="primary" onClick={infoSubmitButton}
+              style={{ width: 150, marginTop: 40, alignContent: 'right' }}>제출하기</Button>
         </div>
       </Box>
+      </QueueArim>
     </Card >
   );
 }
