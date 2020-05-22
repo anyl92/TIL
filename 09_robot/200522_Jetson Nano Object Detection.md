@@ -81,9 +81,7 @@ Non-ASCII character '\xeb' in file  -> 파이썬 코드 내의 한글 인식 못
 
     - [Running the Live Camera Recognition Demo](https://github.com/dusty-nv/jetson-inference/blob/master/docs/imagenet-camera-2.md)
 
-    ```bash
     
-    ```
-
+    
     
 
