@@ -1,9 +1,6 @@
 /** @jsx jsx  */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { css, jsx } from '@emotion/core'
-// import { Link } from 'react-router-dom'
-// import { Carousel } from 'react-bootstrap'
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Tutorial from './Tutorial/Tutorial'
 import Select from './Tutorial/Select'
@@ -13,124 +10,86 @@ import Arrive from './Tutorial/Arrive'
 
 
 const boxPadding = css`
-  height: 7vw;
+  height: 5.5vw;
   width: 100%;
   visibility: hidden;
 `
-
+const romi = css`
+color: #39226A;
+`
 const boxHeight = window.innerHeight - (window.innerHeight / 100 * 40)
-const TestModeBox = css`
+const TestModeLCD = css`
+  position: relative;
+  flex: 2;
+  display: inline-block;
   width: 60%;
-  height: 400px;
+  height: 500px;
   // height: ${boxHeight}px;
-  margin: 3vw 7%;
-  // padding: auto;
+  margin: 1vw 7%;
+  padding: 10px;
   box-shadow: 6px 6px 10px 0 rgb(163, 177, 198, 0.6),
    -6px -6px 10px 0 rgba(255, 255, 255, 0.5);
+  background-color: #e0e5ec;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  // &::-webkit-scrollbar {
+  //   display: none;
+  // }
 `
-
-const romi = css`
-  color: purple;
+const TestModeBixby = css`
+  position: relative;
+  flex: 1;
+  display: inline-block;
+  margin: 1vw 7% 1vw 0;
+  width: 250px;
+  height: 500px;
+`
+const TestModeGuide = css`
+  margin-top: 10px;
+  text-align: center;
+  font-size: 2rem;
 `
 
 export default () => {
   const [ pageNum, setPageNum ] = useState(0)
-  const [ selectRobot, setSelectRobot ] = useState('')
   const [ curFloor, setCurFloor ] = useState(null)
-  // const [ selectPlaceName, setSelectRogot ] = useState('')
-  // const [ selectPlaceDesc, setSelectRogot ] = useState('')
-  // const [ selectEventName, setSelectRogot ] = useState('')
-  // const [ selectEventDesc, setSelectRogot ] = useState('')
+  const [ curPlaceInfo, setCurPlaceInfo ] = useState(null)
+  const [ curFloorImg, setCurFloorImg ] = useState('')
+
+  useEffect (() => {
+    if (curFloor) {
+      setCurFloorImg(`/image/bixby/2-${curFloor}.png`)
+    }
+  }, [curFloor])
 
   return (
-    <div>
+    <React.Fragment>
       <div css={boxPadding}>영역을차지하렴</div>
       <h2>팔로팔<span css={romi}>로미</span> 맛보기!</h2>
-      <div css={TestModeBox}>
-        {pageNum}
-        {pageNum === 0 ? <Tutorial i={setPageNum} /> :
-          pageNum === 1 ? <Select i={setPageNum} curfloor={setCurFloor} /> :
-          pageNum === 2 ? <Guide i={setPageNum} curfloor={setCurFloor} /> :
-          pageNum === 3 ? <Move i={setPageNum} /> :
-          pageNum === 4 ? <Arrive i={setPageNum} /> : null}
+      <div css={css`width: 100%; display: flex;`}>
+        <div css={TestModeLCD}>
+          {pageNum === 0 ? <Tutorial i={setPageNum} /> :
+            pageNum === 1 ? <Select i={setPageNum} curfloor={setCurFloor} /> :
+            pageNum === 2 ? <Guide i={setPageNum} curfloor={curFloor} curplaceinfo={setCurPlaceInfo} /> :
+            pageNum === 3 ? <Move i={setPageNum} curfloor={curFloor} curplaceinfo={curPlaceInfo} /> :
+            pageNum === 4 ? <Arrive i={setPageNum} curfloor={curFloor} curplaceinfo={curPlaceInfo} /> : 
+          null}
+        </div>
+        <div css={TestModeBixby}>
+          {pageNum === 0 ? <img src='/image/bixby/0.png' height="100%" css={css`position: absolute; left: 50%; margin-left: -125px;`} /> :
+            pageNum === 1 ? <img src='/image/bixby/1.png' height="100%" css={css`position: absolute; left: 50%; margin-left: -125px;`} /> :
+            pageNum === 2 ? <img src={curFloorImg} height="100%" css={css`position: absolute; left: 50%; margin-left: -125px;`} /> :
+            pageNum === 3 ? <img src='/image/bixby/3.png' height="100%" css={css`position: absolute; left: 50%; margin-left: -125px;`} /> :
+            pageNum === 4 ? <img src='/image/bixby/4.png' height="100%" css={css`position: absolute; left: 50%; margin-left: -125px;`} /> : 
+          null}
+        </div>
       </div>
-    </div>
+      {pageNum === 0 && <div css={TestModeGuide}>현재 코로나 상황으로 인해, <span css={romi}>로미</span>와 여러분이 멀티캠퍼스에서 만날 수 없어요.<br/>그리운 멀티캠퍼스를 튜토리얼에서 구경해볼까요? <span css={romi}>로미</span>가 안내해드릴게요!</div>}
+      {pageNum === 1 && <div css={TestModeGuide}>현재 멀티캠퍼스의 몇 층에서 <span css={romi}>로미</span>를 이용하실 지 선택해 주세요!<br/>실제 <span css={romi}>로미</span>는 해당 층에서 빅스비로 호출한 후 인증번호를 입력하시면 사용하실 수 있답니다.</div>}
+      {pageNum === 2 && <div css={TestModeGuide}>현재 {curFloor}층에 계시군요! {curFloor}층의 장소 정보와, 모든 층에 예정된 행사 정보를 보실 수 있어요!<br/>안내받을 장소를 선택해 주세요.</div>}
+      {pageNum === 3 && <div css={TestModeGuide}>{curFloor}층 {curPlaceInfo.name}에 이동중입니다.<br/>도착하면 도착 버튼을 눌러 주세요!</div>}
+      {pageNum === 4 && <div css={TestModeGuide}>{curFloor}층 {curPlaceInfo.name}에 도착했습니다.<br/>튜토리얼은 여기까지입니다. 이용해주셔서 고마워요!</div>}
+    </React.Fragment>
   );
 };
-
-
-
-// const carousel = css`
-//   width: 80%;
-//   height: 80%;
-// `
-// const divSize = css`
-//   color: black;
-// `
-
-// {/* slide true로 주면 애니메이션 실행 시 사진 커지는 현상 발생 */}
-// <Carousel slide={false} interval={null} css={carousel}> 
-// <Carousel.Item>
-//   <div>
-//     <img
-//       className=""
-//       src={faceImg}
-//       alt="First slide"
-//       width="100px" height='400px'
-//     />
-//     <img
-//       className=""
-//       src={faceImg}
-//       alt="First slide"
-//       width="100px" height='600px'
-//     />
-//   </div>
-//   <Carousel.Caption>
-//     <h3>1. 테스트 모드 진입하기를 누른다.</h3>
-//   </Carousel.Caption>
-// </Carousel.Item>
-// <Carousel.Item>
-//   <img
-//     className="d-block w-100"
-//     src={faceImg}
-//     alt="Second slide"
-//     width='100%' height='500px'
-//   />
-//   <Carousel.Caption>
-//     <h3>2. 사용할 로봇을 선택한다.</h3>
-//   </Carousel.Caption>
-// </Carousel.Item>
-// <Carousel.Item>
-//   <img
-//     className="d-block w-100"
-//     src={faceImg}
-//     alt="Third slide"
-//     width='100%' height='500px'
-//     />
-//   <Carousel.Caption>
-//     <h3>3. 안내 받을 장소를 고른다. </h3>
-//   </Carousel.Caption>
-// </Carousel.Item>
-// <Carousel.Item>
-//   <img
-//     className="d-block w-100"
-//     src={faceImg}
-//     alt="Second slide"
-//     width='100%' height='500px'
-//   />
-//   <Carousel.Caption>
-//     <h3>4. 도착 버튼을 누른다.</h3>
-//   </Carousel.Caption>
-// </Carousel.Item>
-// <Carousel.Item>
-//   <img
-//     className="d-block w-100"
-//     src={faceImg}
-//     alt="Second slide"
-//     width='100%' height='500px'
-//   />
-//   <Carousel.Caption>
-//     <h3>5. 새로운 안내를 받을 지, 종료할 지 선택한다.</h3>
-//   </Carousel.Caption>
-// </Carousel.Item>
-// </Carousel>
