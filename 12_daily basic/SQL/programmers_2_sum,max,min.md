@@ -1,0 +1,32 @@
+1
+
+```sql
+SELECT MAX(DATETIME) FROM ANIMAL_INS
+```
+
+
+
+2
+
+```sql
+SELECT MIN(DATETIME) AS 시간 FROM ANIMAL_INS
+// AS로 컬럼명 지정
+```
+
+
+
+3
+
+```sql
+SELECT COUNT(*) FROM ANIMAL_INS
+```
+
+
+
+4
+
+```sql
+SELECT COUNT(DISTINCT NAME) FROM ANIMAL_INS WHERE NAME IS NOT NULL
+```
+
+

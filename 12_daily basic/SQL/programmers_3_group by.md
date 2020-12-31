@@ -1,0 +1,57 @@
+1
+
+```sql
+SELECT ANIMAL_TYPE, COUNT(*) AS count 
+FROM ANIMAL_INS 
+GROUP BY ANIMAL_TYPE
+ORDER BY CASE ANIMAL_TYPE
+    WHEN 'CAT' THEN 1
+    WHEN 'DOG' THEN 2
+    ELSE 3
+END
+```
+
+
+
+2
+
+```sql
+SELECT NAME, COUNT(*) AS COUNT
+FROM ANIMAL_INS
+GROUP BY NAME
+HAVING COUNT(NAME) >= 2
+ORDER BY NAME
+```
+
+
+
+3
+
+```sql
+SELECT HOUR(DATETIME) AS HOUR, COUNT(*) AS COUNT
+FROM ANIMAL_OUTS
+GROUP BY HOUR(DATETIME)
+HAVING HOUR >= 9 AND HOUR < 20
+ORDER BY HOUR(DATETIME)
+```
+
+
+
+4
+
+```sql
+SET @hour := -1;
+
+SELECT (@hour := @hour + 1) AS HOUR,
+ (SELECT COUNT(*) FROM ANIMAL_OUTS WHERE HOUR(DATETIME) = @hour) AS COUNT
+FROM ANIMAL_OUTS
+WHERE @hour < 23
+```
+
+로컬 변수
+
+- `SET` 으로 변수명과 초기값을 설정
+
+- `@`가 붙은 변수는 프로시저가 종료되어도 유지됨
+
+- `:=`은 대입 연산
