@@ -97,6 +97,28 @@ def merge(left, right):
 
 매우 빠른 정렬 속도를 자랑하는 분할 정복 알고리즘 중 하나, 리스트를 비균등하게 분할한다. 피봇을 설정하고 피봇보다 큰 값과 작은 값으로 분할하여 정렬한다. 시간복잡도는 O(n log n)이지만 리스트가 계속해서 불균등하게 나눠지는 최악의 경우 O(n^2)가 될 수도 있다.
 
+```python
+def quicksort(x):
+    if len(x) <= 1:
+        return x
+
+    pivot = x[len(x) // 2]
+    less = []
+    more = []
+    equal = []
+    for a in x:
+        if a < pivot:
+            less.append(a)
+        elif a > pivot:
+            more.append(a)
+        else:
+            equal.append(a)
+
+    return quicksort(less) + equal + quicksort(more)
+```
+
+
+
 
 
 ### 힙
@@ -128,4 +150,4 @@ Class Node:
 
 
 
-팩토리얼 / 피보나치 / 배수 / 배열뒤집기 / 
+팩토리얼 / 피보나치 / 배수 / 배열뒤집기 / 펠린드롬 / 계산기
